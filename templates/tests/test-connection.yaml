@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "kubediag-helm.fullname" . }}-test-connection"
+  labels:
+    {{- include "kubediag-helm.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "kubediag-helm.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
