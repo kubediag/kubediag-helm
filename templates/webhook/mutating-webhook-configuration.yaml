@@ -1,0 +1,79 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: kubediag/serving-cert
+  name: mutating-webhook-configuration
+webhooks:
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /mutate-diagnosis-kubediag-org-v1-diagnosis
+  failurePolicy: Fail
+  name: mdiagnosis.kb.io
+  rules:
+  - apiGroups:
+    - diagnosis.kubediag.org
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - diagnoses
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /mutate-diagnosis-kubediag-org-v1-operation
+  failurePolicy: Fail
+  name: moperation.kb.io
+  rules:
+  - apiGroups:
+    - diagnosis.kubediag.org
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - operations
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /mutate-diagnosis-kubediag-org-v1-operationset
+  failurePolicy: Fail
+  name: moperationset.kb.io
+  rules:
+  - apiGroups:
+    - diagnosis.kubediag.org
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - operationsets
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /mutate-diagnosis-kubediag-org-v1-trigger
+  failurePolicy: Fail
+  name: mtrigger.kb.io
+  rules:
+  - apiGroups:
+    - diagnosis.kubediag.org
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - triggers
