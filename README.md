@@ -26,7 +26,7 @@ kubectl get all --namespace kubediag
 
 ## Uninstallation
 
-Run the following command to install KubeDiag via Helm:
+Run the following command to uninstall KubeDiag via Helm:
 
 ```bash
 helm uninstall --namespace kubediag kubediag
