@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    control-plane: kubediag
+    mode: master
+  name: kubediag-master
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.masterReplicas }}
+  selector:
+    matchLabels:
+      control-plane: kubediag
+      mode: master
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        control-plane: kubediag
+        mode: master
+    spec:
+      containers:
+      - args:
+        - --mode=master
+        - --bind-address=$(POD_IP)
+        - --port={{ .Values.args.master.port }}
+        - --metrics-port={{ .Values.args.master.metricsPort }}
+        - --enable-leader-election={{ .Values.args.master.enableLeaderElection }}
+        command:
+        - /kubediag
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: kubediag
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        - containerPort: {{ .Values.args.master.metricsPort }}
+          name: metrics
+        - containerPort: {{ .Values.args.master.port }}
+          name: http
+        resources:
+          limits:
+            cpu: {{ .Values.resources.master.limits.cpu }}
+            memory: {{ .Values.resources.master.limits.memory }}
+          requests:
+            cpu: {{ .Values.resources.master.requests.cpu }}
+            memory: {{ .Values.resources.master.requests.memory }}
+        securityContext:
+          privileged: {{ .Values.securityContext.privileged }}
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /etc/kubediag/serving-certs
+          name: cert
+          readOnly: true
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      hostPID: true
+      securityContext:
+        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+      serviceAccountName: kubediag
+      terminationGracePeriodSeconds: 10
+      tolerations:
+      - operator: Exists
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: webhook-server-cert

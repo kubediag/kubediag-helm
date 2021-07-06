@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    control-plane: kubediag
+    mode: agent
+  name: kubediag-agent
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      control-plane: kubediag
+      mode: agent
+  template:
+    metadata:
+      labels:
+        control-plane: kubediag
+        mode: agent
+    spec:
+      containers:
+      - args:
+        - --mode=agent
+        - --bind-address=$(POD_IP)
+        - --port={{ .Values.args.agent.port }}
+        - --metrics-port={{ .Values.args.agent.metricsPort }}
+        - --data-root={{ .Values.args.agent.dataRoot }}
+        - --node-name=$(NODE_NAME)
+        command:
+        - /kubediag
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: kubediag
+        ports:
+        - containerPort: {{ .Values.args.agent.metricsPort }}
+          name: metrics
+        - containerPort: {{ .Values.args.agent.port }}
+          name: http
+        resources:
+          limits:
+            cpu: {{ .Values.resources.agent.limits.cpu }}
+            memory: {{ .Values.resources.agent.limits.memory }}
+          requests:
+            cpu: {{ .Values.resources.agent.requests.cpu }}
+            memory: {{ .Values.resources.agent.requests.memory }}
+        securityContext:
+          privileged: {{ .Values.securityContext.privileged }}
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: docker-sock
+        - mountPath: /var/run/docker
+          name: docker-exec-root
+        - mountPath: /var/lib/docker
+          name: docker-data-root
+        - mountPath: /var/lib/kubelet
+          name: kubelet-data
+        - mountPath: {{ .Values.args.agent.dataRoot }}
+          name: kubediag-data
+        - mountPath: /usr/local/bin/
+          name: usr-local-bin
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      hostPID: true
+      securityContext:
+        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+      serviceAccountName: kubediag
+      terminationGracePeriodSeconds: 10
+      tolerations:
+      - operator: Exists
+      volumes:
+      - hostPath:
+          path: /var/run/docker.sock
+          type: Socket
+        name: docker-sock
+      - hostPath:
+          path: /var/run/docker
+          type: Directory
+        name: docker-exec-root
+      - hostPath:
+          path: /var/lib/docker
+          type: Directory
+        name: docker-data-root
+      - hostPath:
+          path: /var/lib/kubelet
+          type: Directory
+        name: kubelet-data
+      - hostPath:
+          path: {{ .Values.args.agent.dataRoot }}
+          type: DirectoryOrCreate
+        name: kubediag-data
+      - hostPath:
+          path: /usr/local/bin
+          type: DirectoryOrCreate
+        name: usr-local-bin
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 5
+    type: RollingUpdate
