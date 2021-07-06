@@ -2,8 +2,13 @@ apiVersion: v2
 name: kubediag-helm
 description: Helm chart to manage KubeDiag deployment
 home: https://github.com/kubediag/kubediag-helm
+keywords:
+- kubediag
+- diagnosis
+- operation
+- remediation
 maintainers:
-- huangjiuyuan
+- name: huangjiuyuan
 
 # A chart can be either an 'application' or a 'library' chart.
 #
