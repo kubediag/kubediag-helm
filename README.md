@@ -17,7 +17,7 @@ Run the following command to install KubeDiag via Helm:
 ```bash
 helm repo add kubediag https://kubediag.github.io/kubediag-helm
 helm repo update
-helm install kubediag/kubediag-helm --create-namespace --generate-name --namespace kubediag
+helm install kubediag kubediag/kubediag-helm --create-namespace --namespace kubediag
 ```
 
 Check the status of KubeDiag by running the command:
