@@ -99,3 +99,19 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+prometheus:
+  enabled: true
+  annotations: {}
+  ## Configuration for Prometheus service
+  service:
+    annotations: {}
+    labels: {}
+    clusterIP: ""
+  ## Configuration for Prometheus serviceMonitor  
+  serviceMonitor:
+    ## Scrape interval. If not set, the Prometheus default scrape interval is used.
+    interval: ""
+    selfMonitor: false
+    ## scheme: HTTP scheme to use for scraping. Can be used with `tlsConfig` for example if using istio mTLS.
+    scheme: ""
