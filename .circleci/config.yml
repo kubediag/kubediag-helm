@@ -1,0 +1,30 @@
+version: 2.1
+jobs:
+  lint:
+    machine: 
+      image: ubuntu-2004:202010-01
+    working_directory: ~/go/src/github.com/kubediag/kubediag-helm
+    steps:
+      - checkout
+      - run:
+          name: Install helm
+          command: |
+            curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+            sudo apt-get install apt-transport-https --yes
+            echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+            sudo apt-get update
+            sudo apt-get install helm=3.6.3-1
+      - run:
+          name: Lint all
+          command: |
+            helm lint .
+
+workflows:
+  version: 2
+  # Build workflow is triggered on pull request event.
+  build_and_test: # name of workflow
+    jobs:
+      - lint:
+          filters:
+            branches:
+              ignore: gh-pages
