@@ -20,6 +20,12 @@ helm repo update
 helm install kubediag kubediag/kubediag-helm --create-namespace --namespace kubediag
 ```
 
+Prometheus operator related resources are disabled by default. To enable related monitors, specify the '--set' flag when install kubediag (Before this step, make sure you have deployed prometheus operator):
+
+```bash
+helm install kubediag kubediag/kubediag-helm --create-namespace --namespace kubediag --set prometheus.serviceMonitor.selfMonitor=true
+```
+
 Check the status of KubeDiag by running the command:
 
 ```bash
