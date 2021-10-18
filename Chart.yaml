@@ -3,8 +3,8 @@ name: kubediag-helm
 description: Helm chart to manage KubeDiag deployment
 home: https://github.com/kubediag/kubediag-helm
 keywords:
-- kubediag
-- diagnosis
+       - kubediag
+diagnosis
 - operation
 - remediation
 maintainers:
