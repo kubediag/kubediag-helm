@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubediag-dashboard
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubediag-dashboard
+  template:
+    metadata:
+      labels:
+        app: kubediag-dashboard
+    spec:
+      containers:
+      - command:
+        - /main
+        image: hub.c.163.com/kubediag/kubediag-dashboard:v0.1.0
+        name: dashboard
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          limits:
+            cpu: {{ .Values.resources.dashboard.limits.cpu }}
+            memory: {{ .Values.resources.dashboard.limits.memory }}
+          requests:
+            cpu: {{ .Values.resources.dashboard.requests.cpu }}
+            memory: {{ .Values.resources.dashboard.requests.memory }}
+      serviceAccountName: kubediag
+      terminationGracePeriodSeconds: 10
