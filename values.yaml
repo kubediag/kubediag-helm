@@ -48,8 +48,12 @@ args:
     dataRoot: "/var/lib/kubediag"
 
 service:
-  type: ClusterIP
-  port: 8089
+  master:
+    type: ClusterIP
+    port: 8089
+  dashboard:
+    type: NodePort
+    nodePort: 30055
 
 ingress: {}
   # enabled: false
@@ -86,6 +90,13 @@ resources:
     requests:
       cpu: 100m
       memory: 100Mi
+  dashboard:
+    limits:
+      cpu: 800m
+      memory: 800Mi
+    requests:
+      cpu: 200m
+      memory: 200Mi
 
 autoscaling: {}
   # enabled: false
