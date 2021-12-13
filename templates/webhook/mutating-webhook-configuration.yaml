@@ -3,7 +3,7 @@ kind: MutatingWebhookConfiguration
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: kubediag/serving-cert
-  name: mutating-webhook-configuration
+  name: kubediag-mutating-webhook-configuration
 webhooks:
 - clientConfig:
     caBundle: Cg==

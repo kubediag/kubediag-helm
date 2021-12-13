@@ -3,7 +3,7 @@ kind: ValidatingWebhookConfiguration
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: kubediag/serving-cert
-  name: validating-webhook-configuration
+  name: kubediag-validating-webhook-configuration
 webhooks:
 - clientConfig:
     caBundle: Cg==
