@@ -10,6 +10,21 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: v0.2.1
 
+admissionWebhooks:
+  failurePolicy: Fail
+  enabled: true
+  caBundle: ""
+  patch:
+    enabled: true
+    image:
+      repository: jettech/kube-webhook-certgen
+      tag: v1.5.2
+      pullPolicy: IfNotPresent
+    resources: {}
+  # Use certmanager to generate webhook certs
+  certManager:
+    enabled: false
+   
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
