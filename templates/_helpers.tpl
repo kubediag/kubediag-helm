@@ -24,6 +24,13 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Fullname suffixed with operator.
+*/}}
+{{- define "kubediag-helm.operator.fullname" -}}
+{{- printf "%s-operator" (include "kubediag-helm.fullname" .) }}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "kubediag-helm.chart" -}}
