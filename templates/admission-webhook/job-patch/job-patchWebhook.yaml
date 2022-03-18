@@ -1,3 +1,4 @@
+{{- if and .Values.admissionWebhooks.enabled (not .Values.admissionWebhooks.certManager.enabled)}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -42,4 +43,5 @@ spec:
       securityContext:
         runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
         runAsUser: {{ .Values.securityContext.runAsUser }}  
-      serviceAccountName: kubediag 
+      serviceAccountName: {{ .Release.Name }}-admission 
+{{- end }}
