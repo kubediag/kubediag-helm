@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: function-main
+  namespace: {{ .Release.Namespace }}
+data:
+  python3: |
+    import sys
+    import json
+    from function import handler
+
+
+    def main():
+        # The last argument is the context in json format.
+        context_string = sys.argv[-1]
+        context = json.loads(context_string)
+
+        # Call user defined handler.
+        result = handler(context)
+
+        # Serialize result from user defined handler to a json formatted string.
+        json_object = json.dumps(result)
+        print("\n"+json_object)
+
+
+    if __name__ == "__main__":
+        sys.exit(main())

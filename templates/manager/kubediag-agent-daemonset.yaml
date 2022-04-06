@@ -25,6 +25,7 @@ spec:
         - --metrics-port={{ .Values.args.agent.metricsPort }}
         - --data-root={{ .Values.args.agent.dataRoot }}
         - --node-name=$(NODE_NAME)
+        - --python3-main-file=/var/lib/kubediag/function-main/python3
         command:
         - /kubediag
         env:
@@ -63,10 +64,12 @@ spec:
           name: docker-data-root
         - mountPath: /var/lib/kubelet
           name: kubelet-data
-        - mountPath: {{ .Values.args.agent.dataRoot }}
-          name: kubediag-data
         - mountPath: /usr/local/bin/
           name: usr-local-bin
+        - mountPath: {{ .Values.args.agent.dataRoot }}
+          name: kubediag-data
+        - mountPath: /var/lib/kubediag/function-main
+          name: function-main
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
       hostPID: true
@@ -102,6 +105,9 @@ spec:
           path: /usr/local/bin
           type: DirectoryOrCreate
         name: usr-local-bin
+      - configMap:
+          name: function-main
+        name: function-main
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 5
