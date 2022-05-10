@@ -20,7 +20,7 @@ spec:
         - patch
         - --webhook-name={{ .Release.Name }}-mutating-webhook-configuration
         - --namespace={{ .Release.Namespace }}
-        - --secret-name=webhook-server-cert
+        - --secret-name={{ template "kubediag-helm.fullname" . }}-admission
         - --patch-failure-policy=Fail
         - --patch-mutating=true
         - --patch-validating=false
@@ -33,7 +33,7 @@ spec:
         - patch
         - --webhook-name={{ .Release.Name }}-validating-webhook-configuration
         - --namespace={{ .Release.Namespace }}
-        - --secret-name=webhook-server-cert
+        - --secret-name={{ template "kubediag-helm.fullname" . }}-admission
         - --patch-failure-policy=Fail
         - --patch-mutating=false
         - --patch-validating=true
