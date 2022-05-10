@@ -126,6 +126,9 @@ tolerations: []
 
 affinity: {}
 
+operations:
+  enabled: true
+
 prometheus:
   enabled: true
   annotations: {}

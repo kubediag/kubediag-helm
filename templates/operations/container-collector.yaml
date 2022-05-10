@@ -1,0 +1,16 @@
+{{- if .Values.operations.enabled }}
+apiVersion: diagnosis.kubediag.org/v1
+kind: Operation
+metadata:
+  name: container-collector
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/resource-policy": keep
+spec:
+  processor:
+    httpServer:
+      path: /processor/containerCollector
+      scheme: http
+    timeoutSeconds: 60
+{{- end }}
