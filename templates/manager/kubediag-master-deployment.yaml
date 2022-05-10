@@ -76,4 +76,8 @@ spec:
       - name: cert
         secret:
           defaultMode: 420
+{{- if .Values.admissionWebhooks.certManager.enabled }}
           secretName: webhook-server-cert
+{{- else if and .Values.admissionWebhooks.enabled (not .Values.admissionWebhooks.certManager.enabled) }}
+          secretName: {{ template "kubediag-helm.fullname" . }}-admission
+{{- end -}}

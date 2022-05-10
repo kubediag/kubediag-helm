@@ -1,10 +1,10 @@
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingWebhookConfiguration
 metadata:
-  {{- if .Values.admissionWebhooks.certManager.enabled -}}
+{{- if .Values.admissionWebhooks.certManager.enabled }}
   annotations:
     cert-manager.io/inject-ca-from: kubediag/serving-cert
-  {{- end  }}
+{{- end  }}
   name: {{ .Release.Name }}-mutating-webhook-configuration
 webhooks:
 - clientConfig:
