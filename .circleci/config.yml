@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  lint:
+  lint_and_install:
     machine: 
       image: ubuntu-2004:202010-01
     working_directory: ~/go/src/github.com/kubediag/kubediag-helm
@@ -18,13 +18,33 @@ jobs:
           name: Lint all
           command: |
             helm lint .
+      - run:
+          name: Create cluster
+          command: |
+            swapoff -a
+            apt-get update && apt-get install -y apt-transport-https ca-certificates curl
+            sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+            echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+            sudo apt-get update
+            sudo apt-get install -y kubectl=1.17.3-00 kubelet=1.17.3-00 kubeadm=1.17.3-00
+            sudo apt-mark hold kubelet kubeadm kubectl
+            sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+            mkdir -p $HOME/.kube
+            sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+            sudo chown $(id -u):$(id -g) $HOME/.kube/config
+            kubectl taint nodes --all node-role.kubernetes.io/master-
+            kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/v0.18.1/Documentation/kube-flannel.yml      
+      - run:
+          name: Install kubediag
+          command: |
+            helm install . --debug --create-namespace --generate-name --namespace kubediag
 
 workflows:
   version: 2
   # Build workflow is triggered on pull request event.
-  build_and_test: # name of workflow
+  build_and_test: 
     jobs:
-      - lint:
+      - lint_and_install:
           filters:
             branches:
               ignore: gh-pages
