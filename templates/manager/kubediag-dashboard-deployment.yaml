@@ -14,10 +14,21 @@ spec:
         app: kubediag-dashboard
     spec:
       containers:
-      - command:
-        - /main
-        image: hub.c.163.com/kubediag/kubediag-dashboard:v0.1.0
-        name: dashboard
+      - name: backend
+        image: {{ .Values.dashboard.backend.image.repository }}:{{ .Values.dashboard.backend.image.tag }}
+        imagePullPolicy: {{ .Values.dashboard.backend.image.pullPolicy }}
+        ports:
+        - containerPort: 7000
+        resources:
+          limits:
+            cpu: {{ .Values.resources.dashboard.limits.cpu }}
+            memory: {{ .Values.resources.dashboard.limits.memory }}
+          requests:
+            cpu: {{ .Values.resources.dashboard.requests.cpu }}
+            memory: {{ .Values.resources.dashboard.requests.memory }}
+      - name: frontend
+        image: {{ .Values.dashboard.frontend.image.repository }}:{{ .Values.dashboard.frontend.image.tag }}
+        imagePullPolicy: {{ .Values.dashboard.frontend.image.pullPolicy }}
         ports:
         - containerPort: 8080
           name: http
